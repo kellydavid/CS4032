@@ -14,7 +14,6 @@ public class Server {
 	
 	// members
 	private static ServerSocket ss;
-	private static int portNumber;
 	private static ThreadPoolExecutor connectionThreads;
 
 	public static void main(String[] args) {
@@ -25,16 +24,17 @@ public class Server {
 		// Setup thread pool
 		connectionThreads = new ThreadPoolExecutor(THREAD_POOL_SIZE, THREAD_POOL_SIZE, 1000, 
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-		portNumber = Integer.parseInt(args[0]);
-		listen();
+		listen(Integer.parseInt(args[0]));
 	}
 	
-	public static void listen(){
+	public static void listen(int portNumber){
 		try {
+			// Create server socket
 			ss = new ServerSocket();
 			ss.setReuseAddress(true);
 			ss.bind(new InetSocketAddress(InetAddress.getLocalHost(), portNumber));
 			while(true){
+				// Setup a new Connection thread when a new client connects.
 				connectionThreads.execute(new Connection(ss.accept()));
 			}
 		} catch (IOException e) {
