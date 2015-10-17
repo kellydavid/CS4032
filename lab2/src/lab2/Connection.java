@@ -47,7 +47,8 @@ public class Connection implements Runnable{
 					"]\nPort:[" + so.getLocalPort() + "]\nStudentID:[" + Server.STUDENT_ID + "]\n";
 		}
 		else if(request.equals("KILL_SERVICE")){
-			return "Kill Server\n";
+			System.exit(0);
+			return "Shutting down server...\n";
 		}
 		else return null;
 	}
