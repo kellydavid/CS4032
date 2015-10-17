@@ -10,6 +10,7 @@ public class Server {
 	
 	// constants
 	public static final int THREAD_POOL_SIZE = 10;
+	public static final String STUDENT_ID = "e19b9a3807b5cfaa4db33fd30468ef249bb86ccc16c08efbed08f3fb6959e346";
 	
 	// members
 	private static ServerSocket ss;

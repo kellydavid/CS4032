@@ -6,7 +6,8 @@ import java.net.Socket;
 
 public class Connection implements Runnable{
 
-	Socket so;
+	private Socket so;
+	private String recvd;
 	
 	public Connection(Socket so){
 		this.so = so;
@@ -17,16 +18,38 @@ public class Connection implements Runnable{
 		//get string request
 		try{
 			// receive data
-			String recvd = new BufferedReader(new InputStreamReader(so.getInputStream())).readLine();
-			System.out.println("Received: \"" + recvd + "\\n\"");
-			// send data
-			so.getOutputStream().write(new String(recvd.toUpperCase() + "\n").getBytes());
-			System.out.println("Sent: \"" + recvd.toUpperCase() + "\\n\"");
+			recvd = new BufferedReader(new InputStreamReader(so.getInputStream())).readLine();
+			System.out.println("Received: \"" + recvd + "\" from " + so.getInetAddress() + ":" + so.getPort());
+			// process request
+			String result = process(recvd);
+			if(result != null){
+				// send data
+				so.getOutputStream().write(result.getBytes());
+				System.out.println("Sent: \"" + result + "\"");
+			}
 			// close socket
 			so.close();
 		}catch(Exception e){
 			System.err.println("Error sending or receiving data.\n" + e.getMessage());
 		}
+	}
+	
+	
+	/**
+	 * Takes the request received as a String. It returns the String to be sent back to the client.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	private String process(String request){
+		if(request.equals("HELO text")){
+			return "HELO text\nIP:[" + so.getLocalAddress().getHostAddress() + 
+					"]\nPort:[" + so.getLocalPort() + "]\nStudentID:[" + Server.STUDENT_ID + "]\n";
+		}
+		else if(request.equals("KILL_SERVICE")){
+			return "Kill Server\n";
+		}
+		else return null;
 	}
 	
 }
