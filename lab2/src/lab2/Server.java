@@ -2,7 +2,9 @@ package lab2;
 
 import java.io.*;
 import java.net.*;
-//import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Server {
 	
@@ -12,17 +14,18 @@ public class Server {
 	// members
 	private static ServerSocket ss;
 	private static int portNumber;
-	//private static ThreadPoolExecutor connectionThreads;
+	private static ThreadPoolExecutor connectionThreads;
 
 	public static void main(String[] args) {
 		// Check that args includes port number
 		if(args.length != 1){
 			System.out.println("Must supply the port number as an argument");
-		}else{
-			portNumber = Integer.parseInt(args[0]);
-			listen();
 		}
-		
+		// Setup thread pool
+		connectionThreads = new ThreadPoolExecutor(THREAD_POOL_SIZE, THREAD_POOL_SIZE, 1000, 
+				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+		portNumber = Integer.parseInt(args[0]);
+		listen();
 	}
 	
 	public static void listen(){
@@ -31,29 +34,12 @@ public class Server {
 			ss.setReuseAddress(true);
 			ss.bind(new InetSocketAddress(InetAddress.getLocalHost(), portNumber));
 			while(true){
-				Socket so = ss.accept();
-				// receive data
-				String recvd = new BufferedReader(new InputStreamReader(so.getInputStream())).readLine();
-				System.out.println("Received: \"" + recvd + "\\n\"");
-				// send data
-				so.getOutputStream().write(new String(recvd.toUpperCase() + "\n").getBytes());
-				System.out.println("Sent: \"" + recvd.toUpperCase() + "\\n\"");
-				// close socket
-				so.close();
+				connectionThreads.execute(new Connection(ss.accept()));
 			}
-			//ss.close();
 		} catch (IOException e) {
 			System.err.println("Error creating socket.\n" + e.getMessage());
-			try {
-				if(ss != null)
-					ss.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
 			e.printStackTrace();
 		}
 		
 	}
-
 }

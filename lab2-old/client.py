@@ -8,7 +8,7 @@ def sendRequest(host, port, request):
 		# connect to server
 		so.connect((host, port))
 		# Send request
-		so.sendall(request)
+		so.sendall(request + "\n")
 		return so.recv(1024)
 	finally:
 		so.close()
