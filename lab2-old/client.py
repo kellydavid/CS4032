@@ -1,14 +1,12 @@
 from socket import socket, AF_INET, SOCK_STREAM
 import sys
 
-HOST, PORT = "localhost", 8000
-
-def sendRequest(request):
+def sendRequest(host, port, request):
 	# Initialise Socket
 	so = socket(AF_INET, SOCK_STREAM)
 	try:
 		# connect to server
-		so.connect((HOST, PORT))
+		so.connect((host, port))
 		# Send request
 		so.sendall(request)
 		return so.recv(1024)
@@ -16,9 +14,9 @@ def sendRequest(request):
 		so.close()
 
 if __name__ == '__main__':
-	if(len(sys.argv) is not 2):
-		raise Exception("Must provide the request to send.")
+	if(len(sys.argv) is not 4):
+		raise Exception("Must supply hostname, port number and request to send.")
 
-	received = sendRequest(sys.argv[1])
-	print "Sent: " + sys.argv[1] + "\n"
+	received = sendRequest(sys.argv[1], int(sys.argv[2]), sys.argv[3])
+	print "Sent: " + sys.argv[3] + "\n"
 	print "Received: " + received 
