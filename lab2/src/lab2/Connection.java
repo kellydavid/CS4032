@@ -27,7 +27,7 @@ public class Connection implements Runnable{
 			if(result != null){
 				// send data
 				so.getOutputStream().write(result.getBytes());
-				Log.newMessage(LOG_TYPE.MESSAGE_SENT, "\"" + result + "\"" + so.getInetAddress() + ":" + so.getPort());
+				Log.newMessage(LOG_TYPE.MESSAGE_SENT, "\"" + result + "\"\n" + so.getInetAddress() + ":" + so.getPort());
 			}
 			// close socket
 			so.close();
@@ -46,7 +46,7 @@ public class Connection implements Runnable{
 	private String process(String request){
 		if(request.substring(0, 5).equals("HELO ")){
 			return request + "\nIP:[" + so.getLocalAddress().getHostAddress() + 
-					"]\nPort:[" + so.getLocalPort() + "]\nStudentID:[" + Server.STUDENT_ID + "]\n";
+					"]\nPort:[" + so.getLocalPort() + "]\nStudentID:[" + Server.STUDENT_ID + "]";
 		}
 		else if(request.equals("KILL_SERVICE")){
 			System.exit(0);
