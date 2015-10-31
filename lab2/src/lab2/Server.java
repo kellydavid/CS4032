@@ -18,21 +18,22 @@ public class Server {
 
 	public static void main(String[] args) {
 		// Check that args includes port number
-		if(args.length != 1){
-			System.out.println("Must supply the port number as an argument");
+		if(args.length != 2){
+			System.out.println("Must use arguments <hostname> <portnumber>");
+			System.exit(-1);
 		}
 		// Setup thread pool
 		connectionThreads = new ThreadPoolExecutor(THREAD_POOL_SIZE, THREAD_POOL_SIZE, 1000, 
 				TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
-		listen(Integer.parseInt(args[0]));
+		listen(args[0], Integer.parseInt(args[1]));
 	}
 	
-	public static void listen(int portNumber){
+	public static void listen(String hostname, int portNumber){
 		try {
 			// Create server socket
 			ss = new ServerSocket();
 			ss.setReuseAddress(true);
-			ss.bind(new InetSocketAddress(InetAddress.getLocalHost(), portNumber));
+			ss.bind(new InetSocketAddress(hostname, portNumber));
 			while(true){
 				// Setup a new Connection thread when a new client connects.
 				connectionThreads.execute(new Connection(ss.accept()));
