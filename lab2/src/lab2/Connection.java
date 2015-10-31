@@ -44,8 +44,8 @@ public class Connection implements Runnable{
 	 * @return
 	 */
 	private String process(String request){
-		if(request.equals("HELO text")){
-			return "HELO text\nIP:[" + so.getLocalAddress().getHostAddress() + 
+		if(request.substring(0, 5).equals("HELO ")){
+			return request + "\nIP:[" + so.getLocalAddress().getHostAddress() + 
 					"]\nPort:[" + so.getLocalPort() + "]\nStudentID:[" + Server.STUDENT_ID + "]\n";
 		}
 		else if(request.equals("KILL_SERVICE")){
