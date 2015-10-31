@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
 
+import lab2.Log.LOG_TYPE;
+
 public class Connection implements Runnable{
 
 	private Socket so;
@@ -19,18 +21,18 @@ public class Connection implements Runnable{
 		try{
 			// receive data
 			recvd = new BufferedReader(new InputStreamReader(so.getInputStream())).readLine();
-			System.out.println("Received: \"" + recvd + "\" from " + so.getInetAddress() + ":" + so.getPort());
+			Log.newMessage(LOG_TYPE.MESSAGE_RECEIVED, "\"" + recvd + "\" from " + so.getInetAddress() + ":" + so.getPort());
 			// process request
 			String result = process(recvd);
 			if(result != null){
 				// send data
 				so.getOutputStream().write(result.getBytes());
-				System.out.println("Sent: \"" + result + "\"");
+				Log.newMessage(LOG_TYPE.MESSAGE_SENT, "\"" + result + "\"" + so.getInetAddress() + ":" + so.getPort());
 			}
 			// close socket
 			so.close();
 		}catch(Exception e){
-			System.err.println("Error sending or receiving data.\n" + e.getMessage());
+			Log.newMessage(LOG_TYPE.ERROR, "Error sending or receiving data.\n" + e.getMessage());
 		}
 	}
 	
@@ -48,7 +50,7 @@ public class Connection implements Runnable{
 		}
 		else if(request.equals("KILL_SERVICE")){
 			System.exit(0);
-			return "Shutting down server...\n";
+			return null;
 		}
 		else return null;
 	}

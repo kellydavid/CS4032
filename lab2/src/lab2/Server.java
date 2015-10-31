@@ -6,6 +6,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import lab2.Log.LOG_TYPE;
+
 public class Server {
 	
 	// constants
@@ -36,7 +38,9 @@ public class Server {
 			ss.bind(new InetSocketAddress(hostname, portNumber));
 			while(true){
 				// Setup a new Connection thread when a new client connects.
-				connectionThreads.execute(new Connection(ss.accept()));
+				Socket so = ss.accept();
+				connectionThreads.execute(new Connection(so));
+				Log.newMessage(LOG_TYPE.NEW_CONNECTION, so.getInetAddress() + ":" + so.getPort());
 			}
 		} catch (IOException e) {
 			System.err.println("Error creating socket.\n" + e.getMessage());
